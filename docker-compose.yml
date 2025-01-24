@@ -1,7 +1,7 @@
 services:
   tailscale-client:
     image: tailscale/tailscale:latest
-    container_name: tailscale
+    container_name: tailscale-${MC_NAME}
     hostname: tailscale-${MC_NAME} # This name will be the one on the tailscale network
     environment:
       TS_AUTHKEY:
@@ -23,7 +23,7 @@ services:
       resources:
         limits:
           memory: ${MEMORY_LIMITS}
-    network_mode: container:tailscale
+    network_mode: container:tailscale-${MC_NAME}
     stdin_open: true
     tty: true
     environment:
