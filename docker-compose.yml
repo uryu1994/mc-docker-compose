@@ -54,7 +54,7 @@ services:
       # Must be same mount as mc service, needs to be writable
       - ${MC_DATA_DIR}:/data
       # Must be same mount as backups service, but can be read-only
-      - mc-backup:/backups:ro
+      - ${MC_BACKUP_DIR}:/backups:ro
   backups:
     image: itzg/mc-backup
     depends_on:
@@ -75,7 +75,5 @@ services:
       # INCLUDES: world,world_nether,world_the_end
     volumes:
       - ${MC_DATA_DIR}:/data:ro
-      - mc-backup:/backups
-volumes:
-  mc-backup:
+      - ${MC_BACKUP_DIR}:/backups
      
