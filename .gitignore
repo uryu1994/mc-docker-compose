@@ -27,7 +27,10 @@ Vagrantfile
 *.override.yml
 
 # tailscale directory
-.ts-minecraft/
+ts-minecraft/
 
-#minecraft directory
-.mc-data/
+# minecraft directory
+mc-data/
+
+# backup directory
+mc-backup/
