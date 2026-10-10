@@ -34,3 +34,6 @@ mc-data/
 
 # backup directory
 mc-backup/
+
+# local-network environment file
+*.env

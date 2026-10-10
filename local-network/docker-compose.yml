@@ -1,0 +1,54 @@
+services:
+  minecraft-server:
+    container_name: ${MC_NAME:-minecraft-server}
+    image: itzg/minecraft-server
+    deploy:
+      resources:
+        limits:
+          memory: ${MEMORY_LIMITS:-4G}
+    ports:
+      - "25565:25565"
+    stdin_open: true
+    tty: true
+    environment:
+      SERVER_NAME: ${MC_NAME:-minecraft-server}
+      MOTD: ${MC_MOTD:-}
+      EULA: "TRUE"
+      TYPE: ${TYPE:-VANILLA}
+      MAX_PLAYERS: ${MAX_PLAYERS:-10}
+      DIFFICULTY: ${DIFFICULTY:-normal}
+      MEMORY: ""
+      JVM_XX_OPTS: "-XX:MaxRAMPercentage=75"
+      RCON_PASSWORD: ${RCON_PASSWORD:?Set RCON_PASSWORD in the .env file}
+      RCON_PORT: ${RCON_PORT:-25575}
+    volumes:
+      - ${MC_DATA_DIR:-./mc-data}:/data
+    restart: unless-stopped
+
+  restore-backup:
+    image: itzg/mc-backup
+    user: "1000"
+    restart: "no"
+    entrypoint: restore-tar-backup
+    volumes:
+      - ${MC_DATA_DIR:-./mc-data}:/data
+      - ${MC_BACKUP_DIR:-./mc-backup}:/backups:ro
+
+  backups:
+    image: itzg/mc-backup
+    depends_on:
+      minecraft-server:
+        condition: service_healthy
+    user: "1000"
+    environment:
+      BACKUP_METHOD: rsync
+      PRUNE_BACKUPS_COUNT: 50
+      PRUNE_BACKUPS_DAYS: 10
+      BACKUP_INTERVAL: "24h"
+      RCON_HOST: minecraft-server
+      RCON_PASSWORD: ${RCON_PASSWORD:?Set RCON_PASSWORD in the .env file}
+      RCON_PORT: ${RCON_PORT:-25575}
+      INITIAL_DELAY: 0
+    volumes:
+      - ${MC_DATA_DIR:-./mc-data}:/data:ro
+      - ${MC_BACKUP_DIR:-./mc-backup}:/backups
